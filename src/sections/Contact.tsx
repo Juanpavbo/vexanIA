@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -13,43 +13,16 @@ import {
 import { CheckCircle2, Loader2, MessageCircle, CalendarClock } from 'lucide-react'
 import { CAL_LINK } from '@/config'
 
-declare global {
-  interface Window {
-    Cal?: ((...args: unknown[]) => void) & { q?: unknown[][]; loaded?: boolean }
-  }
-}
-
-function useCalEmbed(active: boolean, selector: string) {
-  const loaded = useRef(false)
-  useEffect(() => {
-    if (!active || loaded.current) return
-    loaded.current = true
-
-    // Shim oficial de Cal.com: encola comandos hasta que el script cargue.
-    // Sin esto, embed.js falla con "Cal is not defined" al montarse.
-    const w = window
-    w.Cal =
-      w.Cal ||
-      (function (...args: unknown[]) {
-        ;(w.Cal!.q = w.Cal!.q || []).push(args)
-      } as Window['Cal'])
-
-    const script = document.createElement('script')
-    script.src = 'https://app.cal.com/embed/embed.js'
-    script.async = true
-    script.onload = () => {
-      window.Cal?.('init', 'vexania', { origin: 'https://app.cal.com' })
-      window.Cal?.('ns:vexania', 'inline', {
-        elementOrSelector: selector,
-        calLink: CAL_LINK,
-        config: { theme: 'light' },
-      })
-    }
-    document.head.appendChild(script)
-    return () => {
-      script.remove()
-    }
-  }, [active, selector])
+function CalEmbed() {
+  return (
+    <iframe
+      src={`https://${CAL_LINK}?embed=1&theme=light`}
+      title="Agenda tu diagnóstico — Cal.com"
+      className="mt-4 w-full rounded-xl border border-slate-200"
+      style={{ minHeight: 480, height: 560 }}
+      loading="lazy"
+    />
+  )
 }
 
 function getUtmParams(): Record<string, string> {
@@ -69,8 +42,6 @@ export default function Contact() {
     interest: '',
     message: '',
   })
-
-  useCalEmbed(sent || showCalendar, '#cal-embed')
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -140,7 +111,7 @@ export default function Contact() {
                   Te contactaremos muy pronto. Si quieres,{' '}
                   <span className="font-semibold">agenda ya mismo</span> tu diagnóstico:
                 </p>
-                <div id="cal-embed" className="mt-4 w-full min-h-[420px]" />
+                <CalEmbed />
               </div>
             ) : (
               <form className="space-y-4" onSubmit={onSubmit}>
@@ -241,9 +212,7 @@ export default function Contact() {
                 <p className="text-xs text-slate-400 text-center">
                   Tus datos solo se usan para contactarte. Nada de spam.
                 </p>
-                {showCalendar && (
-                  <div id="cal-embed" className="mt-2 w-full min-h-[420px]" />
-                )}
+                {showCalendar && <CalEmbed />}
               </form>
             )}
           </div>
