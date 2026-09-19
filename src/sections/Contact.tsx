@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -10,10 +10,80 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { CheckCircle2, MessageCircle } from 'lucide-react'
+import { CheckCircle2, Loader2, MessageCircle, CalendarClock } from 'lucide-react'
+import { CAL_LINK } from '@/config'
+
+declare global {
+  interface Window {
+    Cal?: (...args: unknown[]) => void
+  }
+}
+
+function useCalEmbed(active: boolean, selector: string) {
+  const loaded = useRef(false)
+  useEffect(() => {
+    if (!active || loaded.current) return
+    loaded.current = true
+
+    const script = document.createElement('script')
+    script.src = 'https://app.cal.com/embed/embed.js'
+    script.async = true
+    script.onload = () => {
+      window.Cal?.('init', { origin: 'https://app.cal.com' })
+      window.Cal?.('inline', {
+        elementOrSelector: selector,
+        calLink: CAL_LINK,
+        config: { theme: 'light' },
+      })
+    }
+    document.head.appendChild(script)
+    return () => {
+      script.remove()
+    }
+  }, [active, selector])
+}
+
+function getUtmParams(): Record<string, string> {
+  const params = new URLSearchParams(window.location.search)
+  const keys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content']
+  return Object.fromEntries(keys.map((k) => [k, params.get(k) || '']))
+}
 
 export default function Contact() {
   const [sent, setSent] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [showCalendar, setShowCalendar] = useState(false)
+  const [form, setForm] = useState({
+    name: '',
+    company: '',
+    contact: '',
+    interest: '',
+    message: '',
+  })
+
+  useCalEmbed(sent || showCalendar, '#cal-embed')
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSending(true)
+    try {
+      await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...form,
+          utm: getUtmParams(),
+          page: window.location.href,
+        }),
+      })
+    } catch {
+      // La experiencia del visitante es prioritaria: incluso si la red
+      // falla, mostramos el agendamiento para no perder al visitante.
+    } finally {
+      setSending(false)
+      setSent(true)
+    }
+  }
 
   return (
     <section id="contacto" className="py-20 bg-gradient-to-br from-cyan-600 to-violet-700">
@@ -54,40 +124,57 @@ export default function Contact() {
 
           <div className="bg-white rounded-2xl p-6 md:p-8 shadow-2xl">
             {sent ? (
-              <div className="text-center py-10">
+              <div className="text-center py-6">
                 <CheckCircle2 className="w-14 h-14 text-emerald-500 mx-auto" />
                 <h3 className="mt-4 text-xl font-bold text-slate-900">¡Recibimos tu mensaje!</h3>
                 <p className="mt-2 text-slate-600">
-                  Te contactaremos muy pronto para agendar tu diagnóstico gratuito.
+                  Te contactaremos muy pronto. Si quieres,{' '}
+                  <span className="font-semibold">agenda ya mismo</span> tu diagnóstico:
                 </p>
+                <div id="cal-embed" className="mt-4 w-full min-h-[420px]" />
               </div>
             ) : (
-              <form
-                className="space-y-4"
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  setSent(true)
-                }}
-              >
+              <form className="space-y-4" onSubmit={onSubmit}>
                 <div>
                   <label className="text-sm font-medium text-slate-700">Tu nombre</label>
-                  <Input required placeholder="Ej: María Gómez" className="mt-1.5" />
+                  <Input
+                    required
+                    placeholder="Ej: María Gómez"
+                    className="mt-1.5"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-700">
                     Nombre de tu empresa
                   </label>
-                  <Input required placeholder="Ej: Distribuidora La Esquina" className="mt-1.5" />
+                  <Input
+                    required
+                    placeholder="Ej: Distribuidora La Esquina"
+                    className="mt-1.5"
+                    value={form.company}
+                    onChange={(e) => setForm({ ...form, company: e.target.value })}
+                  />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-700">WhatsApp o correo</label>
-                  <Input required placeholder="¿Dónde te contactamos?" className="mt-1.5" />
+                  <Input
+                    required
+                    placeholder="¿Dónde te contactamos?"
+                    className="mt-1.5"
+                    value={form.contact}
+                    onChange={(e) => setForm({ ...form, contact: e.target.value })}
+                  />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-700">
                     ¿Qué te gustaría mejorar?
                   </label>
-                  <Select>
+                  <Select
+                    value={form.interest}
+                    onValueChange={(v) => setForm({ ...form, interest: v })}
+                  >
                     <SelectTrigger className="mt-1.5">
                       <SelectValue placeholder="Elige una opción" />
                     </SelectTrigger>
@@ -116,14 +203,38 @@ export default function Contact() {
                     placeholder="Ej: Pasamos muchas horas registrando pedidos a mano…"
                     className="mt-1.5"
                     rows={3}
+                    value={form.message}
+                    onChange={(e) => setForm({ ...form, message: e.target.value })}
                   />
                 </div>
-                <Button type="submit" className="w-full bg-cyan-600 hover:bg-cyan-700" size="lg">
-                  Solicitar mi diagnóstico gratuito
+                <Button
+                  type="submit"
+                  className="w-full bg-cyan-600 hover:bg-cyan-700"
+                  size="lg"
+                  disabled={sending}
+                >
+                  {sending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" /> Enviando…
+                    </>
+                  ) : (
+                    'Solicitar mi diagnóstico gratuito'
+                  )}
                 </Button>
+                <button
+                  type="button"
+                  onClick={() => setShowCalendar(true)}
+                  className="w-full inline-flex items-center justify-center gap-1.5 text-sm font-medium text-cyan-700 hover:text-cyan-800"
+                >
+                  <CalendarClock className="w-4 h-4" /> O agenda directamente sin llenar el
+                  formulario
+                </button>
                 <p className="text-xs text-slate-400 text-center">
                   Tus datos solo se usan para contactarte. Nada de spam.
                 </p>
+                {showCalendar && (
+                  <div id="cal-embed" className="mt-2 w-full min-h-[420px]" />
+                )}
               </form>
             )}
           </div>
