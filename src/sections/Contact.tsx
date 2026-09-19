@@ -15,7 +15,7 @@ import { CAL_LINK } from '@/config'
 
 declare global {
   interface Window {
-    Cal?: (...args: unknown[]) => void
+    Cal?: ((...args: unknown[]) => void) & { q?: unknown[][]; loaded?: boolean }
   }
 }
 
@@ -25,12 +25,21 @@ function useCalEmbed(active: boolean, selector: string) {
     if (!active || loaded.current) return
     loaded.current = true
 
+    // Shim oficial de Cal.com: encola comandos hasta que el script cargue.
+    // Sin esto, embed.js falla con "Cal is not defined" al montarse.
+    const w = window
+    w.Cal =
+      w.Cal ||
+      (function (...args: unknown[]) {
+        ;(w.Cal!.q = w.Cal!.q || []).push(args)
+      } as Window['Cal'])
+
     const script = document.createElement('script')
     script.src = 'https://app.cal.com/embed/embed.js'
     script.async = true
     script.onload = () => {
-      window.Cal?.('init', { origin: 'https://app.cal.com' })
-      window.Cal?.('inline', {
+      window.Cal?.('init', 'vexania', { origin: 'https://app.cal.com' })
+      window.Cal?.('ns:vexania', 'inline', {
         elementOrSelector: selector,
         calLink: CAL_LINK,
         config: { theme: 'light' },
