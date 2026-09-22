@@ -97,8 +97,6 @@ export default function Contact() {
               <p>
                 📧 <span className="font-medium">vexania@zohomail.com</span>
               </p>
-              <p>📍 Bogotá D.C. y municipios de Cundinamarca</p>
-              <p>🕐 Lun–Vie 8:00–18:00 · Sáb 9:00–13:00</p>
             </div>
           </div>
 
