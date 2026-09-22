@@ -12,7 +12,8 @@ import type { IncomingMessage, ServerResponse } from 'http'
 interface LeadBody {
   name?: string
   company?: string
-  contact?: string
+  whatsapp?: string
+  email?: string
   interest?: string
   message?: string
   utm?: Record<string, string>
@@ -80,9 +81,13 @@ export default async function handler(req: IncomingMessage & { method?: string }
 
   const name = (body.name || '').trim()
   const company = (body.company || '').trim()
-  const contact = (body.contact || '').trim()
-  if (!name || !company || !contact) {
+  const email = (body.email || '').trim()
+  const whatsapp = (body.whatsapp || '').trim()
+  if (!name || !company || (!email && !whatsapp)) {
     return send(400, { ok: false, error: 'Faltan campos obligatorios' })
+  }
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return send(400, { ok: false, error: 'Correo inválido' })
   }
 
   // Red de seguridad: el lead SIEMPRE queda en los logs de Vercel,
@@ -90,7 +95,6 @@ export default async function handler(req: IncomingMessage & { method?: string }
   console.log('LEAD_CAPTURED', JSON.stringify({ ...body, at: new Date().toISOString() }))
 
   const { first, last } = splitName(name)
-  const isEmail = contact.includes('@')
   const interestLabel = INTEREST_LABELS[body.interest || ''] || body.interest || ''
 
   const record: Record<string, string> = {
@@ -113,8 +117,8 @@ export default async function handler(req: IncomingMessage & { method?: string }
       .filter(Boolean)
       .join('\n'),
   }
-  if (isEmail) record.Email = contact
-  else record.Phone = contact
+  if (email) record.Email = email
+  if (whatsapp) record.Phone = whatsapp
 
   try {
     const token = await getAccessToken()
