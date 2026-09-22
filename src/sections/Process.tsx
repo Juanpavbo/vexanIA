@@ -1,6 +1,5 @@
 import { processSteps } from '@/data/services'
 import { Badge } from '@/components/ui/badge'
-import { Building2 } from 'lucide-react'
 
 export default function Process() {
   return (
@@ -29,24 +28,6 @@ export default function Process() {
               )}
             </div>
           ))}
-        </div>
-
-        <div className="mt-14 bg-white rounded-2xl border border-slate-200 p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 shadow-sm">
-          <span className="w-14 h-14 rounded-2xl bg-emerald-100 flex items-center justify-center shrink-0">
-            <Building2 className="w-7 h-7 text-emerald-600" />
-          </span>
-          <div>
-            <h3 className="font-bold text-slate-900 text-lg">
-              ¿Por qué trabajamos con empresas registradas ante el RUES?
-            </h3>
-            <p className="mt-2 text-slate-600 leading-relaxed">
-              Porque un negocio formal es un negocio listo para crecer. Si tu empresa ya está
-              registrada ante el Registro Único Empresarial y Social (RUES), tienes todo lo
-              necesario para acceder a estas soluciones: facturación electrónica, cuentas de correo
-              empresariales y herramientas en la nube con costos pensados para pequeñas empresas.
-              Y si estás en proceso de formalizarte, también te orientamos.
-            </p>
-          </div>
         </div>
       </div>
     </section>

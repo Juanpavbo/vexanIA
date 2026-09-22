@@ -9,17 +9,17 @@ export default function Hero() {
       <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-violet-200/40 rounded-full blur-3xl" />
       <div className="relative max-w-6xl mx-auto px-4 text-center">
         <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 leading-tight tracking-tight">
-          Tu negocio puede trabajar solo,
+          Automatizamos los procesos
           <span className="block bg-gradient-to-r from-cyan-600 to-violet-600 bg-clip-text text-transparent">
-            mientras tú lo haces crecer
+            que le quitan tiempo a tu empresa
           </span>
         </h1>
         <p className="mt-6 text-lg md:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-          Somos una consultoría que ayuda a empresas como la tuya a ahorrar tiempo, vender más y
-          decidir con datos, usando automatización, aplicaciones a la medida, inteligencia
-          artificial y reportes inteligentes.{' '}
+          Conectamos correo, Excel, facturación, pagos, inventarios y reportes para reducir
+          tareas manuales, errores y tiempos de respuesta. Somos una consultoría de automatización
+          inteligente, datos e inteligencia artificial que{' '}
           <span className="font-semibold text-slate-800">
-            Te lo explicamos sin palabras técnicas.
+            te lo explicamos sin palabras técnicas.
           </span>
         </p>
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
