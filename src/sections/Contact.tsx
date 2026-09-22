@@ -38,7 +38,8 @@ export default function Contact() {
   const [form, setForm] = useState({
     name: '',
     company: '',
-    contact: '',
+    whatsapp: '',
+    email: '',
     interest: '',
     message: '',
   })
@@ -136,13 +137,25 @@ export default function Contact() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-slate-700">WhatsApp o correo</label>
+                  <label className="text-sm font-medium text-slate-700">Tu correo</label>
                   <Input
                     required
-                    placeholder="¿Dónde te contactamos?"
+                    type="email"
+                    placeholder="Ej: maria@tuempresa.com"
                     className="mt-1.5"
-                    value={form.contact}
-                    onChange={(e) => setForm({ ...form, contact: e.target.value })}
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-slate-700">Tu WhatsApp</label>
+                  <Input
+                    required
+                    type="tel"
+                    placeholder="Ej: +57 300 123 4567"
+                    className="mt-1.5"
+                    value={form.whatsapp}
+                    onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}
                   />
                 </div>
                 <div>
