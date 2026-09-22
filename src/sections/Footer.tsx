@@ -14,7 +14,7 @@ export default function Footer() {
         </div>
         <p className="text-sm text-center">
           Consultoría en automatización, aplicaciones, inteligencia artificial y reportes para
-          micro y pequeñas empresas en Colombia. Cobertura: Bogotá D.C. y Cundinamarca.
+          micro y pequeñas empresas en Colombia.
         </p>
         <p className="text-xs text-slate-500">
           © {new Date().getFullYear()} vexanIA · Hecho con 💙 para las mipymes

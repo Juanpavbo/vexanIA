@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { ArrowDown, CheckCircle2 } from 'lucide-react'
 
 export default function Hero() {
@@ -9,9 +8,6 @@ export default function Hero() {
       <div className="absolute -top-24 -right-24 w-96 h-96 bg-cyan-200/40 rounded-full blur-3xl" />
       <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-violet-200/40 rounded-full blur-3xl" />
       <div className="relative max-w-6xl mx-auto px-4 text-center">
-        <Badge variant="secondary" className="mb-6 px-4 py-1.5 text-sm">
-          Para micro y pequeñas empresas registradas ante el RUES 🇨🇴
-        </Badge>
         <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 leading-tight tracking-tight">
           Tu negocio puede trabajar solo,
           <span className="block bg-gradient-to-r from-cyan-600 to-violet-600 bg-clip-text text-transparent">
