@@ -1,6 +1,6 @@
 # vexanIA — Landing Page
 
-Landing page de **vexanIA**: consultoría de automatización, aplicaciones a la medida, inteligencia artificial e inteligencia de negocio para micro y pequeñas empresas (mipymes) en Colombia.
+Landing page de **vexanIA**: consultoría de automatización inteligente, datos e IA para micro y pequeñas empresas (mipymes) en Colombia.
 
 ## Stack
 
@@ -19,12 +19,15 @@ Landing page de **vexanIA**: consultoría de automatización, aplicaciones a la 
   - `ZOHO_REFRESH_TOKEN`
   - `ZOHO_DC` (data center: `com`, `com.co`, `eu`...)
 
-  Red de seguridad: si Zoho falla, el lead queda registrado en los logs de
-  Vercel (`LEAD_CAPTURED`) y el visitante no se pierde.
+  El interés y el mensaje del formulario se guardan además como **Nota**
+  ligada al lead. Red de seguridad: si Zoho falla, el lead queda registrado
+  en los logs de Vercel (`LEAD_CAPTURED`) y el visitante no se pierde.
 
 - **Cal.com** — agendamiento de diagnóstico embebido tras enviar el
-  formulario (o vía "agenda directamente"). Configura tu enlace en
-  `src/config.ts` (`CAL_LINK`).
+  formulario (o vía "agenda directamente"). Enlace en `src/config.ts`
+  (`CAL_LINK`).
+
+- **Zoho SalesIQ** — chat en vivo embebido en `index.html`.
 
 - **UTM** — se capturan `utm_source/medium/campaign/term/content` y la URL
   de origen con cada lead.
@@ -59,7 +62,7 @@ Cada push a `main` genera un despliegue automático de producción.
 
 ```
 api/
-  lead.ts            Función serverless: crea el lead en Zoho CRM
+  lead.ts            Función serverless: crea el lead en Zoho CRM + nota
 src/
   config.ts          Enlace de Cal.com u otras integraciones
   sections/          Secciones de la landing (Hero, Servicios, Quiz, FAQ, Contacto...)
