@@ -126,7 +126,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-700">
-                    Nombre de tu empresa
+                    Nombre de tu negocio o empresa
                   </label>
                   <Input
                     required
