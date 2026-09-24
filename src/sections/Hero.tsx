@@ -15,9 +15,9 @@ export default function Hero() {
           </span>
         </h1>
         <p className="mt-6 text-lg md:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-          Ayudamos a micro y pequeñas empresas de Bogotá y Cundinamarca a ahorrar tiempo, mejorar
-          sus procesos y controlar su negocio con automatización, aplicaciones, inteligencia
-          artificial y reportes fáciles de entender.{' '}
+          Ayudamos a negocios, micros y pequeñas empresas a ahorrar tiempo, mejorar procesos y
+          controlar su negocio con automatización, aplicaciones, inteligencia artificial y
+          reportes fáciles de entender.{' '}
           <span className="font-semibold text-slate-800">
             Te lo explicamos sin palabras técnicas.
           </span>
