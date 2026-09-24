@@ -1,5 +1,6 @@
 import Navbar from '@/sections/Navbar'
 import Hero from '@/sections/Hero'
+import Pains from '@/sections/Pains'
 import ServiceExplorer from '@/sections/ServiceExplorer'
 import Quiz from '@/sections/Quiz'
 import Process from '@/sections/Process'
@@ -13,6 +14,7 @@ export default function Home() {
       <Navbar />
       <main>
         <Hero />
+        <Pains />
         <ServiceExplorer />
         <Quiz />
         <Process />
