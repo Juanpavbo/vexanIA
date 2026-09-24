@@ -7,6 +7,10 @@ import type { IncomingMessage, ServerResponse } from 'http'
  * ZOHO_DC (ej: "com", "com.co", "eu").
  * Si Zoho falla, el lead igual queda registrado en los logs de Vercel
  * (fallback) y se responde 200 para no perder al visitante.
+ *
+ * Los campos "Interés" y "Mensaje" se guardan también como Nota ligada al
+ * lead, porque la edición actual de Zoho limita la cantidad de campos
+ * personalizados del módulo Leads.
  */
 
 interface LeadBody {
@@ -132,7 +136,7 @@ export default async function handler(req: IncomingMessage & { method?: string }
       body: JSON.stringify({ data: [record], trigger: ['workflow'] }),
     })
     const zohoData = (await zohoRes.json()) as {
-      data?: { status: string; code?: string; message?: string }[]
+      data?: { status: string; code?: string; message?: string; details?: { id?: string } }[]
     }
     const firstResult = zohoData.data?.[0]
     if (!zohoRes.ok || !firstResult || firstResult.status !== 'success') {
@@ -141,6 +145,39 @@ export default async function handler(req: IncomingMessage & { method?: string }
       // perder la conversión; el equipo lo recupera de Vercel logs.
       return send(200, { ok: true, crm: false })
     }
+
+    // Los campos "Interés" y "Mensaje" además se registran como Nota
+    // ligada al lead (visible al abrir el registro en el CRM).
+    const noteLines = [
+      'Respuestas del formulario de la landing',
+      interestLabel && `• Qué le gustaría mejorar: ${interestLabel}`,
+      body.message && `• Detalle: ${body.message}`,
+    ].filter(Boolean)
+    if (noteLines.length > 1 && firstResult.details?.id) {
+      try {
+        await fetch(`https://www.zohoapis.${dc}/crm/v2/Notes`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Zoho-oauthtoken ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            data: [
+              {
+                Note_Title: 'Respuestas del formulario',
+                Note_Content: noteLines.join('\n'),
+                Parent_Id: firstResult.details.id,
+                se_module: 'Leads',
+              },
+            ],
+          }),
+        })
+      } catch (noteErr) {
+        console.error('ZOHO_NOTE_ERROR', noteErr instanceof Error ? noteErr.message : noteErr)
+        // No interrumpe: el lead ya está creado.
+      }
+    }
+
     return send(200, { ok: true, crm: true })
   } catch (err) {
     console.error('ZOHO_EXCEPTION', err instanceof Error ? err.message : err)
