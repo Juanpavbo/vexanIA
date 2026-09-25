@@ -29,7 +29,7 @@ export const services: Service[] = [
     id: 'automatizacion',
     name: 'Automatización de tareas repetitivas',
     shortName: 'Automatización',
-    tagline: 'Un empleado digital que trabaja 24/7 sin equivocarse',
+    tagline: 'Flujos automáticos que ejecutan tareas repetitivas de manera consistente y reducen los errores manuales.',
     icon: 'zap',
     gradient: 'from-amber-500 to-orange-600',
     plainExplanation:
